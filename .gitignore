@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+
+# Data & Cache (Audio files, uploaded documents, session data)
+data/cache/*
+!data/cache/.gitkeep
+data/uploads/*
+!data/uploads/.gitkeep
+data/documents.json
+data/bookmarks.json
+*.mp3
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Environments & Keys
+.env
+.env.local
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace

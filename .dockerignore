@@ -1,0 +1,9 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+.git/
+.DS_Store
+data/cache/*.mp3
+test.mp3
+direct_test.mp3

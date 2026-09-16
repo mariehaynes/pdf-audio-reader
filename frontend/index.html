@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>PDF Audio Reader — Natural Spoken Audiobooks</title>
+  <meta name="description" content="Listen to PDFs with natural human voices, smart text cleaning, and mobile lock-screen controls.">
+  <meta name="theme-color" content="#5c2882">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/style.css?v=4">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <a href="#" class="nav-brand">
+      <div class="brand-icon">
+        <i data-lucide="headphones" style="width: 18px; height: 18px;"></i>
+      </div>
+      <span>PDF Audio Reader</span>
+    </a>
+    <div class="nav-actions">
+      <!-- Quick Volume Boost in Header for instant mobile access -->
+      <button id="nav-volume-boost" class="btn btn-accent" title="Volume Boost (Lawnmower Mode)" style="font-size: 0.78rem; padding: 0.35rem 0.65rem;">
+        <i data-lucide="volume-2" style="width: 14px; height: 14px;"></i>
+        <span id="nav-vol-label">Vol: 1.0x</span>
+      </button>
+
+      <button id="btn-load-sample" class="btn btn-outline-white" title="Try instant sample audio">
+        <i data-lucide="sparkles" style="width: 15px; height: 15px;"></i>
+        <span>Sample</span>
+      </button>
+      <button id="btn-open-upload" class="btn btn-outline-white" title="Add PDF, Webpage, or Text">
+        <i data-lucide="plus" style="width: 15px; height: 15px;"></i>
+        <span>Add Content</span>
+      </button>
+      <button id="btn-open-settings" class="btn btn-outline-white btn-icon" title="Voice & Settings">
+        <i data-lucide="settings" style="width: 18px; height: 18px;"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="app-container">
+
+    <!-- Left / Sidebar Panel (Document info & Chapters) -->
+    <aside class="sidebar-panel">
+      <div class="card doc-info-card" id="doc-card" style="display: none;">
+        <span class="doc-badge">Active Audio Document</span>
+        <h2 class="doc-title-main" id="doc-title">Document Title</h2>
+        <div class="doc-meta">
+          <span id="doc-pages"><i data-lucide="file-text" style="width: 14px; height: 14px; display: inline;"></i> 0 Pages</span>
+          <span id="doc-duration"><i data-lucide="clock" style="width: 14px; height: 14px; display: inline;"></i> ~0 mins</span>
+        </div>
+
+        <!-- Pre-cache Full Document Action -->
+        <div style="margin-top: 0.9rem; padding-top: 0.75rem; border-top: 1px dashed var(--border);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+            <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted);">Pre-buffer Audio (0s Wait)</span>
+            <span id="cache-percentage-badge" style="font-size: 0.72rem; font-weight: 700; color: var(--accent);">0%</span>
+          </div>
+          <button id="btn-precache-all" class="btn btn-secondary" style="width: 100%; justify-content: center; font-size: 0.78rem; padding: 0.35rem 0.6rem;">
+            <i data-lucide="zap" style="width: 13px; height: 13px;"></i>
+            <span>Pre-buffer All Chapters</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="card" id="chapters-card" style="display: none;">
+        <div style="padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="font-size: 0.95rem;">Chapters & Sections</h3>
+          <span id="chapter-count-badge" style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">0 Sections</span>
+        </div>
+        <div class="chapters-list" id="chapters-list">
+          <!-- Chapter items populated via JS -->
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Reader Panel -->
+    <section class="reader-panel">
+      <!-- Empty State when nothing loaded -->
+      <div class="card empty-state" id="empty-state">
+        <div class="empty-state-icon">
+          <i data-lucide="headphones" style="width: 54px; height: 54px;"></i>
+        </div>
+        <h3>Listen to PDFs, Articles & Web Playlists</h3>
+        <p>Turn PDFs, online articles, and playlists of URLs into natural audiobooks. Smart text cleaning strips headers, ads, and footnotes for seamless listening on phone lock-screen or headphones.</p>
+        <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+          <button class="btn btn-accent" id="empty-upload-btn">
+            <i data-lucide="file-up" style="width: 16px; height: 16px;"></i>
+            <span>Upload PDF</span>
+          </button>
+          <button class="btn btn-primary" id="empty-web-btn" style="background: var(--primary); color: white;">
+            <i data-lucide="globe" style="width: 16px; height: 16px;"></i>
+            <span>Web Playlist / URLs</span>
+          </button>
+          <button class="btn btn-secondary" id="empty-sample-btn">
+            <i data-lucide="play-circle" style="width: 16px; height: 16px;"></i>
+            <span>Listen to Sample</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Active Reader Content -->
+      <div class="card" id="reader-view" style="display: none;">
+        <div class="reader-header">
+          <div>
+            <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent); font-weight: 700; letter-spacing: 0.05em;" id="reading-section-number">Section 1</span>
+            <h2 class="current-section-title" id="reading-section-title">Section Title</h2>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <button id="reader-vol-btn" class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.35rem 0.65rem;">
+              <i data-lucide="volume-2" style="width: 13px; height: 13px;"></i>
+              <span id="reader-vol-label">1.0x</span>
+            </button>
+            <button id="btn-read-aloud-sec" class="btn btn-accent btn-icon" title="Play section">
+              <i data-lucide="play" style="width: 18px; height: 18px;"></i>
+            </button>
+          </div>
+        </div>
+        <div class="reader-content" id="reader-paragraphs">
+          <!-- Synced Paragraphs will render here -->
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Sticky Bottom Audio Player -->
+  <footer class="bottom-player" id="bottom-player">
+    <div class="player-inner">
+      <!-- Scrubber Bar -->
+      <div class="scrubber-container">
+        <span class="time-label" id="time-current">0:00</span>
+        <input type="range" id="audio-scrubber" class="scrubber-range" min="0" max="100" value="0" step="0.1">
+        <span class="time-label" id="time-total">0:00</span>
+      </div>
+
+      <!-- Main Controls Row -->
+      <div class="player-controls-row">
+        <!-- Track Details -->
+        <div class="track-info">
+          <div class="track-thumb">
+            <i data-lucide="volume-2" style="width: 20px; height: 20px;"></i>
+          </div>
+          <div class="track-texts">
+            <div class="track-name" id="player-track-name">Select a Document</div>
+            <div class="track-sub" id="player-track-sub">Tap play to begin audio narration</div>
+          </div>
+        </div>
+
+        <!-- Central Playback Buttons -->
+        <div class="playback-buttons">
+          <button class="ctrl-btn ctrl-btn-skip" id="btn-skip-back" title="Skip Back 15 Seconds">
+            <i data-lucide="rotate-ccw" style="width: 20px; height: 20px;"></i>
+            <span class="skip-tag">15</span>
+          </button>
+          
+          <button class="ctrl-btn" id="btn-prev-chapter" title="Previous Section">
+            <i data-lucide="skip-back" style="width: 20px; height: 20px;"></i>
+          </button>
+
+          <button class="ctrl-btn ctrl-btn-big" id="btn-play-pause" title="Play / Pause">
+            <i data-lucide="play" id="play-icon" style="width: 24px; height: 24px;"></i>
+          </button>
+
+          <button class="ctrl-btn" id="btn-next-chapter" title="Next Section">
+            <i data-lucide="skip-forward" style="width: 20px; height: 20px;"></i>
+          </button>
+
+          <button class="ctrl-btn ctrl-btn-skip" id="btn-skip-forward" title="Skip Forward 15 Seconds">
+            <i data-lucide="rotate-cw" style="width: 20px; height: 20px;"></i>
+            <span class="skip-tag">15</span>
+          </button>
+        </div>
+
+        <!-- Extra Controls (Speed, Volume Boost, Voice) -->
+        <div class="player-extra-controls">
+          <button class="speed-select-btn" id="btn-volume-boost" title="Volume Boost (Outdoor / Lawnmower Boost)" style="background: #fff0eb; color: var(--accent); border-color: #f9d8cb; font-weight: 700;">
+            <i data-lucide="volume-2" style="width: 12px; height: 12px; display: inline; vertical-align: middle;"></i>
+            <span id="volume-boost-label">1.0x</span>
+          </button>
+          <button class="speed-select-btn" id="btn-speed-toggle" title="Change Playback Speed">1.0x</button>
+          <button class="voice-badge-btn" id="btn-voice-quick" title="Current Voice">
+            <i data-lucide="mic" style="width: 12px; height: 12px; display: inline;"></i>
+            <span id="current-voice-name">Christopher</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Hidden Audio Engine Element -->
+  <audio id="main-audio-element" preload="auto"></audio>
+
+  <!-- Add Content Modal (PDF / Web Playlist / Paste Text) -->
+  <div class="modal-backdrop" id="upload-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i data-lucide="plus-circle" style="width: 18px; height: 18px; display: inline; vertical-align: middle;"></i> Add Audio Content</h3>
+        <button class="ctrl-btn" id="close-upload-modal" style="color: white; width: 32px; height: 32px;">
+          <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Content Type Tabs -->
+        <div class="modal-tabs">
+          <button type="button" class="modal-tab-btn active" id="tab-btn-pdf" data-tab="pane-pdf">
+            <i data-lucide="file-up" style="width: 14px; height: 14px;"></i>
+            <span>Upload PDF</span>
+          </button>
+          <button type="button" class="modal-tab-btn" id="tab-btn-web" data-tab="pane-web">
+            <i data-lucide="globe" style="width: 14px; height: 14px;"></i>
+            <span>Web Playlist</span>
+          </button>
+          <button type="button" class="modal-tab-btn" id="tab-btn-text" data-tab="pane-text">
+            <i data-lucide="file-text" style="width: 14px; height: 14px;"></i>
+            <span>Paste Text</span>
+          </button>
+        </div>
+
+        <!-- Tab 1: Upload PDF -->
+        <div class="tab-pane" id="pane-pdf">
+          <div class="drop-zone" id="drop-zone">
+            <input type="file" id="file-input" accept=".pdf" style="display: none;">
+            <div class="drop-zone-icon">
+              <i data-lucide="cloud-upload" style="width: 44px; height: 44px;"></i>
+            </div>
+            <h4 style="margin-bottom: 0.3rem;">Drop your PDF here or click to browse</h4>
+            <p style="font-size: 0.8rem; color: var(--text-muted);">Auto-cleans page numbers, footnotes, and formatting for audio</p>
+            <div id="selected-file-name" style="margin-top: 0.8rem; font-weight: 600; color: var(--primary); display: none;"></div>
+          </div>
+
+          <button class="btn btn-accent" id="btn-start-upload" style="width: 100%; justify-content: center; padding: 0.75rem; font-size: 0.95rem;" disabled>
+            <span>Process & Read Aloud</span>
+          </button>
+        </div>
+
+        <!-- Tab 2: Web Playlist (URLs) -->
+        <div class="tab-pane hidden" id="pane-web">
+          <div class="form-group">
+            <label for="playlist-title-input">Playlist Title (Optional)</label>
+            <input type="text" id="playlist-title-input" class="form-control" placeholder="e.g. AI News Roundup or Tech Reads">
+          </div>
+
+          <div class="form-group">
+            <label for="playlist-urls-input">Article URLs (one per line)</label>
+            <textarea id="playlist-urls-input" class="form-control" rows="4" placeholder="https://example.com/article-1&#10;https://example.com/article-2&#10;https://example.com/article-3" style="resize: vertical; font-size: 0.82rem; font-family: monospace;"></textarea>
+            <small style="color: var(--text-muted); font-size: 0.75rem;">
+              Enter 1 or more URLs. Each webpage becomes a chapter that auto-plays continuously.
+            </small>
+          </div>
+
+          <div id="web-status-msg" class="status-feedback"></div>
+
+          <button class="btn btn-accent" id="btn-start-playlist" style="width: 100%; justify-content: center; padding: 0.75rem; font-size: 0.95rem;">
+            <i data-lucide="play-circle" style="width: 16px; height: 16px;"></i>
+            <span>Create Audio Playlist</span>
+          </button>
+        </div>
+
+        <!-- Tab 3: Paste Text / Article -->
+        <div class="tab-pane hidden" id="pane-text">
+          <div class="form-group">
+            <label for="rawtext-title-input">Title (Optional)</label>
+            <input type="text" id="rawtext-title-input" class="form-control" placeholder="e.g. Substack Newsletter / Memo Title">
+          </div>
+
+          <div class="form-group">
+            <label for="rawtext-body-input">Article or Newsletter Content</label>
+            <textarea id="rawtext-body-input" class="form-control" rows="5" placeholder="Paste article text, newsletter, or paywalled content here..." style="resize: vertical; font-size: 0.85rem;"></textarea>
+            <small style="color: var(--text-muted); font-size: 0.75rem;">
+              Useful for paywalled articles, emails, or notes. We clean citations and format for speech.
+            </small>
+          </div>
+
+          <div id="rawtext-status-msg" class="status-feedback"></div>
+
+          <button class="btn btn-accent" id="btn-start-rawtext" style="width: 100%; justify-content: center; padding: 0.75rem; font-size: 0.95rem;">
+            <i data-lucide="play-circle" style="width: 16px; height: 16px;"></i>
+            <span>Process & Read Aloud</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings / Voice Selector Modal -->
+  <div class="modal-backdrop" id="settings-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i data-lucide="sliders-horizontal" style="width: 18px; height: 18px; display: inline; vertical-align: middle;"></i> Voice & Sound Settings</h3>
+        <button class="ctrl-btn" id="close-settings-modal" style="color: white; width: 32px; height: 32px;">
+          <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Volume Boost Level (Outdoor / Lawnmower Amplifier)</label>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem; margin-top: 0.3rem;">
+            <button type="button" class="btn btn-secondary vol-opt-btn" data-vol="1.0">1.0x Normal</button>
+            <button type="button" class="btn btn-secondary vol-opt-btn" data-vol="1.5">1.5x Loud</button>
+            <button type="button" class="btn btn-secondary vol-opt-btn" data-vol="2.0">2.0x Mower</button>
+            <button type="button" class="btn btn-secondary vol-opt-btn" data-vol="2.5">2.5x Max</button>
+          </div>
+          <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.2rem;">Uses hardware audio compression to amplify speech above background noise without distorting.</small>
+        </div>
+
+        <div class="form-group" style="margin-top: 0.8rem;">
+          <label for="voice-select">Choose Narrator Voice (Free HD Neural Voices)</label>
+          <select id="voice-select" class="form-control">
+            <!-- Populated via JS -->
+          </select>
+          <small style="color: var(--text-muted); font-size: 0.75rem;">All voices are high-definition, human-like neural audio with zero token or audio fees.</small>
+        </div>
+
+        <button class="btn btn-accent" id="btn-save-settings" style="width: 100%; justify-content: center; padding: 0.65rem; margin-top: 0.5rem;">
+          <span>Save Settings</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js?v=7"></script>
+</body>
+</html>

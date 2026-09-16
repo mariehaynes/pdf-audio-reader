@@ -1,0 +1,16 @@
+{
+  "name": "PDF Audio Reader",
+  "short_name": "PDF Audio",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#5c2882",
+  "theme_color": "#662d91",
+  "description": "Listen to PDFs with natural human voices, smart text cleaning, and mobile lock-screen controls.",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23662d91'/><path d='M30 25 L70 25 A5 5 0 0 1 75 30 L75 70 A5 5 0 0 1 70 75 L30 75 A5 5 0 0 1 25 70 L25 30 A5 5 0 0 1 30 25 Z' fill='none' stroke='%23f15a25' stroke-width='6'/><polygon points='43,38 43,62 64,50' fill='%23f15a25'/></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
