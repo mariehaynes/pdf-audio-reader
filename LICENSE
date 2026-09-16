@@ -1,0 +1,34 @@
+PolyForm Noncommercial License 1.0.0
+
+<https://polyformproject.org/licenses/noncommercial/1.0.0/>
+
+Copyright 2026 Marie Haynes
+
+## 1. Acceptance
+
+In order to receive this license, you must agree to its rules. The rules of this license are both obligations under that agreement and conditions to your license. You must not do anything with this software that triggers a rule that you cannot or will not follow.
+
+## 2. Commercial Use Restriction
+
+You may not use this software for any commercial purpose. Examples of commercial purpose include:
+
+- Running the software to provide a paid service or commercial SaaS.
+- Selling or licensing copies of the software.
+- Bundling the software with commercial products or services.
+- Using the software as part of revenue-generating commercial operations.
+
+## 3. Permitted Personal & Educational Use
+
+You may run, modify, copy, and distribute this software for noncommercial purposes, such as:
+
+- Personal use for individual reading and study.
+- Research, education, and academic evaluation.
+- Private personal hosting for your own individual reading needs.
+
+## 4. Third-Party Speech Services Notice
+
+This software interfaces with Microsoft Edge Neural Text-to-Speech endpoints for spoken voice generation. Microsoft Edge TTS is intended for individual personal reading. Any commercial or production business applications require licensing official commercial speech APIs directly (such as Microsoft Azure Speech Services or Google Cloud Text-to-Speech).
+
+## 5. Disclaimer
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

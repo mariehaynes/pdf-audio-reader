@@ -78,3 +78,13 @@ gcloud run deploy pdf-audio-reader \
 ```
 
 - **Mobile Access**: Open your deployed URL in Safari or Chrome on your phone, tap **Share** > **Add to Home Screen** to install as a standalone audio app with full lock-screen & Bluetooth controls.
+
+---
+
+## 3. License & Acceptable Use
+
+This project is licensed under the **[PolyForm Noncommercial License 1.0.0](LICENSE)**.
+
+- ✅ **Permitted**: Personal reading, private self-hosting for your own use, educational review, and academic research.
+- ❌ **Not Permitted**: Commercial use, selling the software, bundling into commercial products, or offering as a paid SaaS service.
+- ⚠️ **Third-Party TTS Notice**: Voice narration utilizes Microsoft Edge Neural Text-to-Speech endpoints, which are intended for individual personal reading. Any commercial application requires licensing an official commercial API (such as Microsoft Azure Speech Services or Google Cloud TTS).
